@@ -38,8 +38,8 @@ defmodule Chaton.Umbrella.MixProject do
   # and cannot be accessed from applications inside the apps/ folder.
   defp aliases do
     [
-      # run `mix setup` in all child apps
-      setup: ["cmd mix setup"]
+      setup: ["deps.get", "cmd npm install --prefix assets"],
+      test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"]
     ]
   end
 end
