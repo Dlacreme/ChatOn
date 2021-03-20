@@ -1,4 +1,4 @@
-defmodule ChatonWeb.PageLive do
+defmodule ChatonWeb.HomeLive do
   use ChatonWeb, :live_view
 
   @impl true

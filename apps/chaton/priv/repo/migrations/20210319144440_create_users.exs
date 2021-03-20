@@ -14,7 +14,6 @@ defmodule Chaton.Repo.Migrations.CreateUsers do
       add :role_id, references(:user_roles, type: :string), null: false
       add :meta, :map, null: true
       add :disabled_at, :naive_datetime, null: true
-
       timestamps()
     end
 
@@ -27,7 +26,6 @@ defmodule Chaton.Repo.Migrations.CreateUsers do
       add :context, :string, null: false
       add :sent_to, :string
       add :expired_at, :naive_datetime, null: true
-
       timestamps(updated_at: false)
     end
 
