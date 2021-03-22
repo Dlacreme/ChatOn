@@ -43,11 +43,27 @@ defmodule Chaton.Auth do
   end
 
   @doc """
+  Gets the user with the given signed token.
+  """
+  def get_admin_by_session_token(token) do
+    {:ok, query} = Chaton.Auth.AdminToken.verify_session_token_query(token)
+    Chaton.Repo.one(query)
+  end
+
+  @doc """
   Generates a session token.
   """
   def generate_admin_session_token(user) do
     {token, admin_token} = Chaton.Auth.AdminToken.build_session_token(user)
     Chaton.Repo.insert!(admin_token)
     token
+  end
+
+  @doc """
+  Deletes the signed token with the given context.
+  """
+  def delete_session_token(token) do
+    Repo.delete_all(Chaton.Auth.AdminToken.token_and_context_query(token, "session"))
+    :ok
   end
 end

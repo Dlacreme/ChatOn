@@ -24,19 +24,22 @@ defmodule ChatonWeb.Router do
     plug :put_root_layout, {ChatonWeb.LayoutView, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
+    plug(:fetch_current_admin)
   end
 
   scope "/", ChatonWeb do
-    pipe_through([:browser, :redirect_if_user_is_authenticated])
+    pipe_through([:browser, :redirect_if_admin_is_authenticated])
 
     get("/login", AuthController, :new)
     post("/login", AuthController, :create)
   end
 
   scope "/", ChatonWeb do
-    pipe_through([:browser, :require_authenticated_user])
+    pipe_through([:browser, :require_authenticated_admin])
 
-    live "/", PageLive, :index
+    delete("/logout", AuthController, :delete)
+
+    live "/", HomeLive, :index
     live_dashboard "/dashboard", metrics: ChatonWeb.Telemetry
   end
 end

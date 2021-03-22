@@ -7,10 +7,15 @@
     "watch": "webpack --mode development --watch"
   },
   "dependencies": {
+    "autoprefixer": "^10.1.0",
+    "fattable": "^1.0.0",
     "phoenix": "file:../../../deps/phoenix",
     "phoenix_html": "file:../../../deps/phoenix_html",
     "phoenix_live_view": "file:../../../deps/phoenix_live_view",
-    "nprogress": "^0.2.0"
+    "nprogress": "^0.2.0",
+    "postcss": "^8.1.13",
+    "postcss-loader": "^4.1.0",
+    "tailwindcss": "^2.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",

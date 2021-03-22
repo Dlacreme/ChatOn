@@ -11,8 +11,16 @@
   </head>
   <body>
     <header>
-      <section class="container">
-      </section>
+        <section class="container flex p-2">
+            <a href="/" class="flex-grow">
+                <img class="h-8" src="<%= Routes.static_path(@conn, "/images/chaton.png") %>" alt="Company logo">
+            </a>
+            <%= if @current_admin do %>
+            <ul>
+                <%= link "Log out", to: Routes.auth_path(@conn, :delete), method: :delete, class: 'block px-4 py-2 text-sm text-white-400 hover:bg-gray-700', role: 'menuitem' %>
+            </ul>
+            <% end %>
+        </section>
     </header>
     <%= @inner_content %>
   </body>

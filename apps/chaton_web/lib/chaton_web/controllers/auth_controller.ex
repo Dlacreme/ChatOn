@@ -28,7 +28,7 @@ defmodule ChatonWeb.AuthController do
 
     conn
     |> renew_session()
-    |> put_session(:user_token, token)
+    |> put_session(:admin_token, token)
     |> put_session(:live_socket_id, "users_sessions:#{Base.url_encode64(token)}")
     |> maybe_write_remember_me_cookie(token, params)
     |> redirect(to: user_return_to || "/")
@@ -44,19 +44,57 @@ defmodule ChatonWeb.AuthController do
     %{"email" => email, "password" => password} = user_params
     IO.puts("USER PARAMS > #{inspect(user_params)}")
 
-    if user = Chaton.Auth.get_admin_by_email_and_password(email, password) do
-      log_in_admin(conn, user, user_params)
+    if admin = Chaton.Auth.get_admin_by_email_and_password(email, password) do
+      log_in_admin(conn, admin, user_params)
     else
       render(conn, "login.html", error_message: "Invalid email or password")
     end
   end
 
+  def delete(conn, _params) do
+    IO.puts("\n===== LOG OUT \n")
+
+    conn
+    |> put_flash(:info, "Logged out successfully.")
+    |> log_out_user()
+  end
+
+  @doc """
+  Logs the user out.
+
+  It clears all session data for safety. See renew_session.
+  """
+  def log_out_user(conn) do
+    admin_token = get_session(conn, :admin_token)
+    admin_token && Chaton.Auth.delete_session_token(admin_token)
+
+    if live_socket_id = get_session(conn, :live_socket_id) do
+      ChatonWeb.Endpoint.broadcast(live_socket_id, "disconnect", %{})
+    end
+
+    conn
+    |> renew_session()
+    |> delete_resp_cookie(@remember_me_cookie)
+    |> redirect(to: "/")
+  end
+
   ## Pipes
+
+  @doc """
+  Authenticates the user by looking into the session
+  and remember me token.
+  """
+  def fetch_current_admin(conn, _opts) do
+    {admin_token, conn} = ensure_admin_token(conn)
+    admin = admin_token && Chaton.Auth.get_admin_by_session_token(admin_token)
+    assign(conn, :current_admin, admin)
+  end
+
   @doc """
   Used for routes that require the user to not be authenticated.
   """
-  def redirect_if_user_is_authenticated(conn, _opts) do
-    if conn.assigns[:current_user] do
+  def redirect_if_admin_is_authenticated(conn, _opts) do
+    if conn.assigns[:current_admin] do
       conn
       |> redirect(to: "/")
       |> halt()
@@ -71,8 +109,8 @@ defmodule ChatonWeb.AuthController do
   If you want to enforce the user email is confirmed before
   they use the application at all, here would be a good place.
   """
-  def require_authenticated_user(conn, _opts) do
-    if conn.assigns[:current_user] do
+  def require_authenticated_admin(conn, _opts) do
+    if conn.assigns[:current_admin] do
       conn
     else
       conn
@@ -108,5 +146,19 @@ defmodule ChatonWeb.AuthController do
 
   defp maybe_write_remember_me_cookie(conn, _token, _params) do
     conn
+  end
+
+  defp ensure_admin_token(conn) do
+    if admin_token = get_session(conn, :admin_token) do
+      {admin_token, conn}
+    else
+      conn = fetch_cookies(conn, signed: [@remember_me_cookie])
+
+      if admin_token = conn.cookies[@remember_me_cookie] do
+        {admin_token, put_session(conn, :user_token, admin_token)}
+      else
+        {nil, conn}
+      end
+    end
   end
 end

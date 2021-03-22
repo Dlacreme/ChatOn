@@ -1,6 +1,6 @@
 <%= form_for @conn, Routes.auth_path(@conn, :create), [
   as: :user,
-  class: 'flex-1 flex flex-col'
+  class: 'flex-1 flex flex-col h-full'
 ], fn f -> %>
 <div class="flex-1 h-full bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
   <div class="sm:mx-auto sm:w-full sm:max-w-md">
@@ -10,7 +10,7 @@
     </h2>
   </div>
 
-  <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+  <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md mb-24">
     <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
 
       <%= if @error_message do %>
@@ -43,7 +43,7 @@
         <div class="flex items-center justify-between mt-5 mb-5">
           <div class="flex items-center">
             <%= label f, :remember_me, gettext("Remember me"),
-              class: "ml-2 block text-sm text-gray-900" %>
+              class: "ml-2 block text-sm text-gray-900" %>&nbsp;
             <%= checkbox f, :remember_me, class: "h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded" %>
           </div>
         <div>
