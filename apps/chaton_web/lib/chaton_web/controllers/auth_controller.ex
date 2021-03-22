@@ -22,8 +22,8 @@ defmodule ChatonWeb.AuthController do
   disconnected on log out. The line can be safely removed
   if you are not using LiveView.
   """
-  def log_in_user(conn, user, params \\ %{}) do
-    token = Accounts.generate_user_session_token(user)
+  def log_in_admin(conn, user, params \\ %{}) do
+    token = Chaton.Auth.generate_admin_session_token(user)
     user_return_to = get_session(conn, :user_return_to)
 
     conn
@@ -44,8 +44,8 @@ defmodule ChatonWeb.AuthController do
     %{"email" => email, "password" => password} = user_params
     IO.puts("USER PARAMS > #{inspect(user_params)}")
 
-    if user = Chaton.Auth.get_user_by_email_and_password(email, password) do
-      log_in_user(conn, user, user_params)
+    if user = Chaton.Auth.get_admin_by_email_and_password(email, password) do
+      log_in_admin(conn, user, user_params)
     else
       render(conn, "login.html", error_message: "Invalid email or password")
     end

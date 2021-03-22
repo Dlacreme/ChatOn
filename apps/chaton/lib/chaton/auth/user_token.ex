@@ -15,4 +15,14 @@ defmodule Chaton.Auth.UserToken do
 
     timestamps(updated_at: false)
   end
+
+  @doc """
+  Generates a token that will be stored in a signed place,
+  such as session or cookie. As they are signed, those
+  tokens do not need to be hashed.
+  """
+  def build_session_token(user) do
+    token = :crypto.strong_rand_bytes(@rand_size)
+    {token, %__MODULE__{token: token, context: "session", user_id: user.id}}
+  end
 end

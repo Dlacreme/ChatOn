@@ -22,7 +22,7 @@ defmodule Chaton.Repo.Migrations.CreateAdmins do
       timestamps(updated_at: false)
     end
 
-    create index(:admin_tokens, [:user_id])
+    create index(:admin_tokens, [:admin_id])
     create unique_index(:admin_tokens, [:context, :token])
 
   end

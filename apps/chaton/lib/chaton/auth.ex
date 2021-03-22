@@ -25,18 +25,18 @@ defmodule Chaton.Auth do
   end
 
   @doc """
-  Gets a user by email and password.
+  Gets an admin by email and password.
 
   ## Examples
 
-      iex> get_user_by_email_and_password("foo@example.com", "correct_password")
+      iex> get_admin_by_email_and_password("foo@example.com", "correct_password")
       %User{}
 
-      iex> get_user_by_email_and_password("foo@example.com", "invalid_password")
+      iex> get_admin_by_email_and_password("foo@example.com", "invalid_password")
       nil
 
   """
-  def get_user_by_email_and_password(email, password)
+  def get_admin_by_email_and_password(email, password)
       when is_binary(email) and is_binary(password) do
     user = Chaton.Repo.get_by(Admin, email: email)
     if Admin.valid_password?(user, password), do: user
@@ -45,9 +45,9 @@ defmodule Chaton.Auth do
   @doc """
   Generates a session token.
   """
-  def generate_user_session_token(user) do
-    {token, user_token} = UserToken.build_session_token(user)
-    Repo.insert!(user_token)
+  def generate_admin_session_token(user) do
+    {token, admin_token} = Chaton.Auth.AdminToken.build_session_token(user)
+    Chaton.Repo.insert!(admin_token)
     token
   end
 end
