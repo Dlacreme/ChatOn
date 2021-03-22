@@ -1,11 +1,11 @@
-# Script for populating the database. You can run it as:
-#
-#     mix run priv/repo/seeds.exs
-#
-# Inside the script, you can read and write to any of your
-# repositories directly:
-#
-#     Chaton.Repo.insert!(%Chaton.SomeSchema{})
-#
-# We recommend using the bang functions (`insert!`, `update!`
-# and so on) as they will fail if something goes wrong.
+Chaton.Repo.insert!(%Chaton.Auth.UserRole{
+  id: "guest",
+  label: "Guest"
+})
+
+Chaton.Repo.insert!(%Chaton.Auth.UserRole{
+  id: "user",
+  label: "User"
+})
+
+{:ok, _} = Chaton.Auth.add_admin("admin@chaton.com", "toto4242")

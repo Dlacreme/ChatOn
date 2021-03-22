@@ -11,6 +11,7 @@ defmodule Chaton.MixProject do
       lockfile: "../../mix.lock",
       elixir: "~> 1.7",
       elixirc_paths: elixirc_paths(Mix.env()),
+      compilers: [:gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps()
@@ -36,9 +37,11 @@ defmodule Chaton.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix_pubsub, "~> 2.0"},
+      {:bcrypt_elixir, "~> 2.0"},
       {:ecto_sql, "~> 3.4"},
+      {:gettext, "~> 0.11"},
       {:postgrex, ">= 0.0.0"},
+      {:phoenix_pubsub, "~> 2.0"},
       {:jason, "~> 1.0"}
     ]
   end

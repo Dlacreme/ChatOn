@@ -37,6 +37,7 @@ defmodule ChatonWeb.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:chaton, in_umbrella: true},
       {:phoenix, "~> 1.5.7"},
       {:phoenix_ecto, "~> 4.0"},
       {:phoenix_live_view, "~> 0.15.0"},
@@ -47,7 +48,6 @@ defmodule ChatonWeb.MixProject do
       {:telemetry_metrics, "~> 0.4"},
       {:telemetry_poller, "~> 0.4"},
       {:gettext, "~> 0.11"},
-      {:chaton, in_umbrella: true},
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"}
     ]

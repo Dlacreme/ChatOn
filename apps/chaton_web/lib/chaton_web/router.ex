@@ -1,6 +1,22 @@
 defmodule ChatonWeb.Router do
   use ChatonWeb, :router
 
+  import Phoenix.LiveDashboard.Router
+
+  ## Public Socket Handler
+
+  ## Admin API
+  pipeline :api do
+    plug :accepts, ["json"]
+  end
+
+  scope "/api", ChatonWeb do
+    pipe_through([:api, :require_authenticated_user])
+  end
+
+  ## Admin Web App
+  import ChatonWeb.AuthController
+
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
@@ -8,36 +24,22 @@ defmodule ChatonWeb.Router do
     plug :put_root_layout, {ChatonWeb.LayoutView, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
-  end
-
-  pipeline :api do
-    plug :accepts, ["json"]
+    plug(:fetch_current_admin)
   end
 
   scope "/", ChatonWeb do
-    pipe_through :browser
+    pipe_through([:browser, :redirect_if_admin_is_authenticated])
 
-    live "/", PageLive, :index
+    get("/login", AuthController, :new)
+    post("/login", AuthController, :create)
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", ChatonWeb do
-  #   pipe_through :api
-  # end
+  scope "/", ChatonWeb do
+    pipe_through([:browser, :require_authenticated_admin])
 
-  # Enables LiveDashboard only for development
-  #
-  # If you want to use the LiveDashboard in production, you should put
-  # it behind authentication and allow only admins to access it.
-  # If your application does not have an admins-only section yet,
-  # you can use Plug.BasicAuth to set up some basic authentication
-  # as long as you are also using SSL (which you should anyway).
-  if Mix.env() in [:dev, :test] do
-    import Phoenix.LiveDashboard.Router
+    delete("/logout", AuthController, :delete)
 
-    scope "/" do
-      pipe_through :browser
-      live_dashboard "/dashboard", metrics: ChatonWeb.Telemetry
-    end
+    live "/", HomeLive, :index
+    live_dashboard "/dashboard", metrics: ChatonWeb.Telemetry
   end
 end

@@ -11,19 +11,16 @@
   </head>
   <body>
     <header>
-      <section class="container">
-        <nav role="navigation">
-          <ul>
-            <li><a href="https://hexdocs.pm/phoenix/overview.html">Get Started</a></li>
-            <%= if function_exported?(Routes, :live_dashboard_path, 2) do %>
-              <li><%= link "LiveDashboard", to: Routes.live_dashboard_path(@conn, :home) %></li>
+        <section class="container flex p-2">
+            <a href="/" class="flex-grow">
+                <img class="h-8" src="<%= Routes.static_path(@conn, "/images/chaton.png") %>" alt="Company logo">
+            </a>
+            <%= if @current_admin do %>
+            <ul>
+                <%= link "Log out", to: Routes.auth_path(@conn, :delete), method: :delete, class: 'block px-4 py-2 text-sm text-white-400 hover:bg-gray-700', role: 'menuitem' %>
+            </ul>
             <% end %>
-          </ul>
-        </nav>
-        <a href="https://phoenixframework.org/" class="phx-logo">
-          <img src="<%= Routes.static_path(@conn, "/images/phoenix.png") %>" alt="Phoenix Framework Logo"/>
-        </a>
-      </section>
+        </section>
     </header>
     <%= @inner_content %>
   </body>
