@@ -29,7 +29,8 @@ defmodule ChatonWeb.Router do
   scope "/", ChatonWeb do
     pipe_through([:browser, :redirect_if_user_is_authenticated])
 
-    get("/login", AuthController, :login)
+    get("/login", AuthController, :new)
+    post("/login", AuthController, :create)
   end
 
   scope "/", ChatonWeb do
