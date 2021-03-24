@@ -40,7 +40,7 @@ defmodule Chaton.Umbrella.MixProject do
     [
       setup: ["deps.get", "cmd npm install --prefix assets"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
-      dev: ["cmd export API_KEY=toto42", "phx.server"]
+      dev: ["cmd export API_KEY=dev", "phx.server"]
     ]
   end
 end

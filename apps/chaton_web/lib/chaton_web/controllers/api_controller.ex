@@ -4,7 +4,7 @@ defmodule ChatonWeb.ApiController do
   import Phoenix.Controller
 
   @api_key_header_name "api-key"
-  @api_key System.get_env("API_KEY")
+  @api_key System.get_env("API_KEY", "dev")
 
   ## Handlers
 
@@ -12,7 +12,7 @@ defmodule ChatonWeb.ApiController do
   """
   def index(conn, _opts) do
     conn
-    |> render("index.json")
+    |> render("index.json", %{})
   end
 
   @doc """
@@ -46,10 +46,15 @@ defmodule ChatonWeb.ApiController do
   """
   def require_api_key(conn, _opts) do
     case Enum.find(conn.req_headers, fn h -> elem(h, 0) == @api_key_header_name end) do
-      header -> check_api_key(conn, elem(header, 1))
-      _ -> conn
-            |> put_status(:unauthorized)
-            |> render("error.json", %{message: "Missing API KEY"})
+      nil ->
+        conn
+        |> put_status(:unauthorized)
+        |> put_view(ChatonWeb.ApiView)
+        |> render(ChatonWeb.ApiView, "error.json", %{message: "Incorrect headers."})
+        |> halt()
+
+      header ->
+        check_api_key(conn, elem(header, 1))
     end
   end
 
@@ -58,9 +63,12 @@ defmodule ChatonWeb.ApiController do
   end
 
   defp check_api_key(conn, _api_key) do
+    IO.puts("|#{_api_key}|")
+    IO.puts("|#{@api_key}|")
     conn
-      |> put_status(:unauthorized)
-      |> render("error.json", %{message: "Invalid API KEY"})
+    |> put_status(:unauthorized)
+    |> put_view(ChatonWeb.ApiView)
+    |> render("error.json", %{message: "Invalid headers."})
+    |> halt()
   end
-
 end

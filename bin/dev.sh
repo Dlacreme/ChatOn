@@ -1,1 +1,0 @@
-EXPORT API_KEY=devtest
