@@ -63,8 +63,6 @@ defmodule ChatonWeb.ApiController do
   end
 
   defp check_api_key(conn, _api_key) do
-    IO.puts("|#{_api_key}|")
-    IO.puts("|#{@api_key}|")
     conn
     |> put_status(:unauthorized)
     |> put_view(ChatonWeb.ApiView)
