@@ -13,4 +13,8 @@ defmodule ChatonWeb.ApiView do
     %{user: user}
   end
 
+  def render("error.json", %{message: message}) do
+    %{message: message}
+  end
+
 end
