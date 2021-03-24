@@ -3,17 +3,6 @@ defmodule ChatonWeb.Router do
 
   import Phoenix.LiveDashboard.Router
 
-  ## Public Socket Handler
-
-  ## Admin API
-  pipeline :api do
-    plug :accepts, ["json"]
-  end
-
-  scope "/api", ChatonWeb do
-    pipe_through([:api, :require_authenticated_user])
-  end
-
   ## Admin Web App
   import ChatonWeb.AuthController
 
@@ -27,19 +16,42 @@ defmodule ChatonWeb.Router do
     plug(:fetch_current_admin)
   end
 
-  scope "/", ChatonWeb do
+  scope "/app", ChatonWeb do
     pipe_through([:browser, :redirect_if_admin_is_authenticated])
 
     get("/login", AuthController, :new)
     post("/login", AuthController, :create)
   end
 
-  scope "/", ChatonWeb do
+  scope "/app", ChatonWeb do
     pipe_through([:browser, :require_authenticated_admin])
 
     delete("/logout", AuthController, :delete)
 
     live "/", HomeLive, :index
     live_dashboard "/dashboard", metrics: ChatonWeb.Telemetry
+  end
+
+  ## Admin API
+  import ChatonWeb.ApiController
+
+  pipeline :api do
+    plug :accepts, ["json"]
+  end
+
+  scope "/", ChatonWeb do
+    pipe_through([:api, :require_api_key])
+
+    get("/", ApiController, :index)
+    get("/auth", ApiController, :auth_guest)
+    get("/auth/:user_id", ApiController, :auth_user)
+  end
+
+  ## Public Socket Handler
+  pipeline :channel do
+  end
+
+  scope "/channel", ChatonWeb do
+    pipe_through([:channel])
   end
 end
