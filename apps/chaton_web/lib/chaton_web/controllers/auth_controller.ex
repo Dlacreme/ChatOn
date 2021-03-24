@@ -52,8 +52,6 @@ defmodule ChatonWeb.AuthController do
   end
 
   def delete(conn, _params) do
-    IO.puts("\n===== LOG OUT \n")
-
     conn
     |> put_flash(:info, "Logged out successfully.")
     |> log_out_user()
