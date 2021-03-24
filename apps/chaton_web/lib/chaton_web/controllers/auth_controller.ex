@@ -112,7 +112,7 @@ defmodule ChatonWeb.AuthController do
       conn
     else
       conn
-      |> redirect(external: "https://github.com/dlacreme/chaton")
+      |> redirect(to: "/app/login")
       |> halt()
     end
   end
