@@ -63,7 +63,7 @@ defmodule Chaton.Auth do
   Deletes the signed token with the given context.
   """
   def delete_session_token(token) do
-    Repo.delete_all(Chaton.Auth.AdminToken.token_and_context_query(token, "session"))
+    Chaton.Repo.delete_all(Chaton.Auth.AdminToken.token_and_context_query(token, "session"))
     :ok
   end
 end

@@ -31,7 +31,7 @@ defmodule ChatonWeb.AuthController do
     |> put_session(:admin_token, token)
     |> put_session(:live_socket_id, "users_sessions:#{Base.url_encode64(token)}")
     |> maybe_write_remember_me_cookie(token, params)
-    |> redirect(to: user_return_to || "/")
+    |> redirect(to: user_return_to || "/app")
   end
 
   ## Pages
@@ -52,8 +52,6 @@ defmodule ChatonWeb.AuthController do
   end
 
   def delete(conn, _params) do
-    IO.puts("\n===== LOG OUT \n")
-
     conn
     |> put_flash(:info, "Logged out successfully.")
     |> log_out_user()
@@ -75,7 +73,7 @@ defmodule ChatonWeb.AuthController do
     conn
     |> renew_session()
     |> delete_resp_cookie(@remember_me_cookie)
-    |> redirect(to: "/")
+    |> redirect(to: "/app")
   end
 
   ## Pipes
@@ -96,7 +94,7 @@ defmodule ChatonWeb.AuthController do
   def redirect_if_admin_is_authenticated(conn, _opts) do
     if conn.assigns[:current_admin] do
       conn
-      |> redirect(to: "/")
+      |> redirect(to: "/app")
       |> halt()
     else
       conn
@@ -114,7 +112,7 @@ defmodule ChatonWeb.AuthController do
       conn
     else
       conn
-      |> redirect(external: "https://github.com/dlacreme/chaton")
+      |> redirect(to: "/app/login")
       |> halt()
     end
   end

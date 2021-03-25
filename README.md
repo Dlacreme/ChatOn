@@ -21,6 +21,11 @@ Cool chat system written in Elixir.
   * Elixir
   * Postgresql
 
+### Env Variables
+| Name    | Description                          |
+| ------- | ------------------------------------ |
+| API_KEY | Api key for the current organization |
+
 ### Web Server
 To start the Phoenix Web Server (admin app):
   * Install dependencies with `mix deps.get`
