@@ -2,14 +2,12 @@ defmodule Chaton.Auth.AdminToken do
   use Ecto.Schema
   import Ecto.Query
 
-  @hash_algorithm :sha256
-  @rand_size 32
+  @moduledoc """
+  Handle token for admin? Bare duplicate of UserToken.
+  TODO: centralize UserToken & AdminToken code. Using behaviour maybe?
+  """
 
-  # It is very important to keep the reset password token expiry short,
-  # since someone with access to the email may take over the account.
-  @reset_password_validity_in_days 1
-  @confirm_validity_in_days 7
-  @change_email_validity_in_days 7
+  @rand_size 32
   @session_validity_in_days 60
 
   @primary_key {:id, :binary_id, autogenerate: true}
@@ -18,6 +16,7 @@ defmodule Chaton.Auth.AdminToken do
     field :token, :binary
     field :context, :string
     field :sent_to, :string
+    field :expired_at, :naive_datetime
     belongs_to :admin, Chaton.Auth.Admin
 
     timestamps(updated_at: false)
@@ -54,4 +53,5 @@ defmodule Chaton.Auth.AdminToken do
   def token_and_context_query(token, context) do
     from __MODULE__, where: [token: ^token, context: ^context]
   end
+
 end
