@@ -42,9 +42,10 @@ defmodule ChatonWeb.ApiController do
   @doc """
   Create a new user
   """
-  def create_user(conn, _opts) do
+  def create_user(conn, opts) do
+    user = Chaton.Repo.insert!(Chaton.Auth.User.changeset_meta(%{}, %{toto: "tata"}))
     conn
-    |> render("user.json", %{user: %{}})
+    |> render("user.json", %{user: user})
   end
 
   ## Pipes

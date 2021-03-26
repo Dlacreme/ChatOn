@@ -3,14 +3,8 @@ defmodule Chaton.Repo.Migrations.CreateUsers do
 
   def change do
 
-    create table(:user_roles, primary_key: false) do
-      add :id, :string, primary_key: true
-      add :label, :string, null: false
-    end
-
     create table(:users, primary_key: false) do
       add :id, :binary_id, primary_key: true
-      add :role_id, references(:user_roles, type: :string), null: false
       add :meta, :map, null: true
       add :disabled_at, :naive_datetime, null: true
       timestamps()

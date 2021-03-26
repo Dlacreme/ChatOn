@@ -11,8 +11,6 @@ defmodule ChatonWeb.Application do
       ChatonWeb.Telemetry,
       # Start the Endpoint (http/https)
       ChatonWeb.Endpoint
-      # Start a worker by calling: ChatonWeb.Worker.start_link(arg)
-      # {ChatonWeb.Worker, arg}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
