@@ -14,15 +14,9 @@ defmodule Chaton.Auth do
 
   @doc """
   Returns an `%Ecto.Changeset{}` for tracking user changes.
-
-  ## Examples
-
-      iex> change_user_registration(user)
-      %Ecto.Changeset{data: %Admin{}}
-
   """
-  def change_user_registration(%Admin{} = user, attrs \\ %{}) do
-    Admin.registration_changeset(user, attrs, hash_password: false)
+  def change_admin_registration(%Admin{} = admin, attrs \\ %{}) do
+    Admin.registration_changeset(admin, attrs, hash_password: false)
   end
 
   @doc """

@@ -4,6 +4,7 @@ defmodule Chaton.Auth.UserToken do
 
   @rand_size 32
   @session_validity_in_days 60
+  @channel_validity_in_days 1
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
@@ -26,6 +27,25 @@ defmodule Chaton.Auth.UserToken do
     token = :crypto.strong_rand_bytes(@rand_size)
     {token, %__MODULE__{token: token, context: "session", user_id: user.id,
       expired_at: get_expired_at(@session_validity_in_days)}}
+  end
+
+  @doc """
+  Generated a channel token for a user
+  """
+  def build_channel_token(user) do
+    token = :crypto.strong_rand_bytes(@rand_size)
+    {token, %__MODULE__{token: token, context: "channel", user_id: user.id,
+      expired_at: get_expired_at(@channel_validity_in_days)}}
+  end
+
+
+  @doc """
+  Generated a channel token for a guest
+  """
+  def build_channel_token() do
+    token = :crypto.strong_rand_bytes(@rand_size)
+    {token, %__MODULE__{token: token, context: "channel",
+      expired_at: get_expired_at(@channel_validity_in_days)}}
   end
 
   @doc """

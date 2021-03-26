@@ -20,15 +20,23 @@ defmodule ChatonWeb.ApiController do
   """
   def auth_guest(conn, _opts) do
     conn
-    |> render("auth.json", %{token: "1234"})
+    |> insert_and_return_token(Chaton.Auth.UserToken.build_channel_token())
+    # |> render("auth.json", %{token: Chaton.Auth.UserToken.build_channel_token()})
   end
 
   @doc """
   Create an authentication token for a user
   """
-  def auth_user(conn, _opts) do
-    conn
-    |> render("auth.json", %{token: "1234"})
+  def auth_user(conn, %{"user_id" => user_id}) do
+    case Chaton.Repo.get_by(Chaton.Auth.User, id: user_id) do
+      nil ->
+        conn
+        |> put_status(:undefined)
+        |> render("error.json", %{message: "Not found"})
+      user ->
+        conn
+        |> insert_and_return_token(Chaton.Auth.UserToken.build_channel_token(user))
+    end
   end
 
   @doc """
@@ -50,7 +58,7 @@ defmodule ChatonWeb.ApiController do
         conn
         |> put_status(:unauthorized)
         |> put_view(ChatonWeb.ApiView)
-        |> render(ChatonWeb.ApiView, "error.json", %{message: "Incorrect headers."})
+        |> render("error.json", %{message: "Incorrect headers."})
         |> halt()
 
       header ->
@@ -68,5 +76,12 @@ defmodule ChatonWeb.ApiController do
     |> put_view(ChatonWeb.ApiView)
     |> render("error.json", %{message: "Invalid headers."})
     |> halt()
+  end
+
+  defp insert_and_return_token(conn, {token, user_token}) do
+    Chaton.Repo.insert!(user_token)
+    conn
+    |> put_view(ChatonWeb.ApiView)
+    |> render("auth.json", %{token: Base.url_encode64(token)})
   end
 end
