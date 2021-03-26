@@ -2,6 +2,14 @@
 
 Cool chat system written in Elixir.
 
+One instance per consumer. You can add an admin using a single email and password through CLI (check seeds.exs)
+
+## Consumer Flow
+ 1. Consumer back-end can create a new user and attach any meta data via the admin API (optional)
+ 2. Consumer back-end can authenticate a user or a guest on the system via the admin API. It will generate an authentication token returned by the API
+ 3. Consumer front-end can open a socket on the system and use the authentication token to start the user/guest session
+ 4. Once successfully authenticated, socket will receive any unread notifications and then start listen for incoming or outgoing messages
+
 ## Applications
  - Administration panel (/apps/chaton_web): CRUD on user roles and enable/disable features
  - Chat server: websocket for clients to connect to
@@ -9,7 +17,8 @@ Cool chat system written in Elixir.
 
 ## Features
  - [ ] Admin Panel
- - [ ] Roles & Authentication system
+ - [x] Roles & Authentication system
+ - [ ] Notifications system
  - [ ] One to one chat
  - [ ] One to many chat (chat room)
  - [ ] Message formatting (tag people, emojis, etc...)

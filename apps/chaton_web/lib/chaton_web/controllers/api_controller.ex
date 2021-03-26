@@ -16,7 +16,7 @@ defmodule ChatonWeb.ApiController do
   end
 
   @doc """
-  Create an authentication tocket for a guest user
+  Create an authentication token for a guest user
   """
   def auth_guest(conn, _opts) do
     conn
@@ -24,7 +24,7 @@ defmodule ChatonWeb.ApiController do
   end
 
   @doc """
-  Create an authentication tocket for a user
+  Create an authentication token for a user
   """
   def auth_user(conn, _opts) do
     conn
@@ -42,7 +42,7 @@ defmodule ChatonWeb.ApiController do
   ## Pipes
 
   @doc """
-  Make sure the requets has a valid API key
+  Make sure request has a valid API key
   """
   def require_api_key(conn, _opts) do
     case Enum.find(conn.req_headers, fn h -> elem(h, 0) == @api_key_header_name end) do
