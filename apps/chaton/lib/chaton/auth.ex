@@ -1,5 +1,6 @@
 defmodule Chaton.Auth do
   alias Chaton.Auth.Admin
+  import Ecto.Query
 
   @moduledoc """
   Authentication system
@@ -66,4 +67,15 @@ defmodule Chaton.Auth do
     Chaton.Repo.delete_all(Chaton.Auth.AdminToken.token_and_context_query(token, "session"))
     :ok
   end
+
+  @doc """
+  Deletes all token already expired
+  """
+  def clean_expired_token(token_module) do
+    date = NaiveDateTime.utc_now()
+    Chaton.Repo.delete_all(
+      from t in token_module, where: ^date >= t.expired_at
+    )
+  end
+
 end

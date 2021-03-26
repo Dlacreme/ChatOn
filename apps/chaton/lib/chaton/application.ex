@@ -10,9 +10,9 @@ defmodule Chaton.Application do
       # Start the Ecto repository
       Chaton.Repo,
       # Start the PubSub system
-      {Phoenix.PubSub, name: Chaton.PubSub}
-      # Start a worker by calling: Chaton.Worker.start_link(arg)
-      # {Chaton.Worker, arg}
+      {Phoenix.PubSub, name: Chaton.PubSub},
+      # Start the CRON
+      Chaton.Cron,
     ]
 
     Supervisor.start_link(children, strategy: :one_for_one, name: Chaton.Supervisor)

@@ -25,7 +25,8 @@ config :chaton_web, ChatonWeb.Endpoint,
       "node_modules/webpack/bin/webpack.js",
       "--mode",
       "development",
-      "--watch-stdin",
+      "--watch",
+      "--watch-options-stdin",
       cd: Path.expand("../apps/chaton_web/assets", __DIR__)
     ]
   ]

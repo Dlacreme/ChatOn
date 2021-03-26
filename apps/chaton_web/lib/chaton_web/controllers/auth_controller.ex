@@ -19,8 +19,8 @@ defmodule ChatonWeb.AuthController do
 
   It also sets a `:live_socket_id` key in the session,
   so LiveView sessions are identified and automatically
-  disconnected on log out. The line can be safely removed
-  if you are not using LiveView.
+  disconnected on log out.
+  The line can be safely removed if we never use LiveView
   """
   def log_in_admin(conn, user, params \\ %{}) do
     token = Chaton.Auth.generate_admin_session_token(user)
@@ -104,8 +104,7 @@ defmodule ChatonWeb.AuthController do
   @doc """
   Used for routes that require the user to be authenticated.
 
-  If you want to enforce the user email is confirmed before
-  they use the application at all, here would be a good place.
+  TODO: request email verification?
   """
   def require_authenticated_admin(conn, _opts) do
     if conn.assigns[:current_admin] do
