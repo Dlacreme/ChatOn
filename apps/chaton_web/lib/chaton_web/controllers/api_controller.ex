@@ -43,9 +43,11 @@ defmodule ChatonWeb.ApiController do
   Create a new user
   """
   def create_user(conn, opts) do
-    user = Chaton.Repo.insert!(Chaton.Auth.User.changeset_meta(%{}, %{toto: "tata"}))
+    # user = Chaton.Repo.insert!(Chaton.Auth.User.changeset_meta(%{}, %{toto: "tata"}))
+    user_changeset = Chaton.Auth.User.changeset_meta(%{}, %{toto: "tata"})
+    IO.puts("USER CHANGESET >> #{inspect user_changeset}")
     conn
-    |> render("user.json", %{user: user})
+    |> render("user.json", %{user: %{}})
   end
 
   ## Pipes
