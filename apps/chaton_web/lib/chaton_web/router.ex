@@ -54,12 +54,4 @@ defmodule ChatonWeb.Router do
     post("/user", ApiController, :create_user)
     post("/user/:user_id", ApiController, :edit_user)
   end
-
-  ## Public Socket Handler
-  pipeline :channel do
-  end
-
-  scope "/channel", ChatonWeb do
-    pipe_through([:channel])
-  end
 end

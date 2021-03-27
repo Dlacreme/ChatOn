@@ -42,7 +42,6 @@ defmodule ChatonWeb.AuthController do
 
   def create(conn, %{"user" => user_params}) do
     %{"email" => email, "password" => password} = user_params
-    IO.puts("USER PARAMS > #{inspect(user_params)}")
 
     if admin = Chaton.Auth.get_admin_by_email_and_password(email, password) do
       log_in_admin(conn, admin, user_params)

@@ -29,8 +29,14 @@ defmodule Chaton.Auth.AdminToken do
   """
   def build_session_token(admin) do
     token = :crypto.strong_rand_bytes(@rand_size)
-    {token, %__MODULE__{token: token, context: "session", admin_id: admin.id,
-      expired_at: get_expired_at(@session_validity_in_days)}}
+
+    {token,
+     %__MODULE__{
+       token: token,
+       context: "session",
+       admin_id: admin.id,
+       expired_at: get_expired_at(@session_validity_in_days)
+     }}
   end
 
   @doc """
@@ -40,6 +46,7 @@ defmodule Chaton.Auth.AdminToken do
   """
   def verify_session_token_query(token) do
     today = NaiveDateTime.utc_now()
+
     query =
       from token in token_and_context_query(token, "session"),
         join: admin in assoc(token, :admin),
@@ -57,9 +64,8 @@ defmodule Chaton.Auth.AdminToken do
   end
 
   defp get_expired_at(validity_day) do
-    NaiveDateTime.utc_now
+    NaiveDateTime.utc_now()
     |> NaiveDateTime.truncate(:second)
     |> NaiveDateTime.add(60 * 60 * 24 * validity_day)
   end
-
 end

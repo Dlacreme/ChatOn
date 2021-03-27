@@ -67,9 +67,6 @@ defmodule Chaton.Auth do
   """
   def clean_expired_token(token_module) do
     date = NaiveDateTime.utc_now()
-    Chaton.Repo.delete_all(
-      from t in token_module, where: ^date >= t.expired_at
-    )
+    Chaton.Repo.delete_all(from t in token_module, where: ^date >= t.expired_at)
   end
-
 end
