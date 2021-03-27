@@ -52,6 +52,7 @@ defmodule ChatonWeb.Router do
     get("/user/:user_id", ApiController, :get_user)
     get("/user/", ApiController, :search_user)
     post("/user", ApiController, :create_user)
+    post("/user/:user_id", ApiController, :edit_user)
   end
 
   ## Public Socket Handler
