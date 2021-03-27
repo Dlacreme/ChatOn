@@ -137,6 +137,7 @@ defmodule ChatonWeb.ApiController do
 
   defp insert_and_return_token(conn, {token, user_token}) do
     Chaton.Repo.insert!(user_token)
+    IO.puts(inspect(token))
 
     conn
     |> put_view(ChatonWeb.ApiView)

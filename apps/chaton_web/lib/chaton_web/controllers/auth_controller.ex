@@ -84,6 +84,7 @@ defmodule ChatonWeb.AuthController do
   """
   def fetch_current_admin(conn, _opts) do
     {admin_token, conn} = ensure_admin_token(conn)
+    IO.puts("ADMIN TOKEN > #{inspect(admin_token)}")
     admin = admin_token && Chaton.Auth.get_admin_by_session_token(admin_token)
     assign(conn, :current_admin, admin)
   end

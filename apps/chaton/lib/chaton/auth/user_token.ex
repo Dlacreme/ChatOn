@@ -53,10 +53,9 @@ defmodule Chaton.Auth.UserToken do
     today = NaiveDateTime.utc_now()
 
     Chaton.Repo.one(
-      from token in token_and_context_query(token, "channel"),
+      from token in token_and_context_query(Base.url_decode64!(token), "channel"),
         left_join: user in assoc(token, :user),
-        where: ^today <= token.expired_at,
-        select: user
+        where: ^today <= token.expired_at
     )
   end
 

@@ -60,7 +60,6 @@ defmodule Chaton.Auth.AdminToken do
   Returns the given token with the given context.
   """
   def token_and_context_query(token, context) do
-    IO.puts("TOKEN >> #{inspect(token)}")
     from __MODULE__, where: [token: ^token, context: ^context]
   end
 
