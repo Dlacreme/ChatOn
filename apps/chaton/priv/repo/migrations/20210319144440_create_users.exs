@@ -5,7 +5,7 @@ defmodule Chaton.Repo.Migrations.CreateUsers do
 
     create table(:users, primary_key: false) do
       add :id, :binary_id, primary_key: true
-      add :meta, :map, null: true
+      add :meta, :map, null: false, default: %{}
       add :disabled_at, :naive_datetime, null: true
       timestamps()
     end

@@ -21,8 +21,6 @@ defmodule ChatonWeb.ApiController do
   def auth_guest(conn, _opts) do
     conn
     |> insert_and_return_token(Chaton.Auth.UserToken.build_channel_token())
-
-    # |> render("auth.json", %{token: Chaton.Auth.UserToken.build_channel_token()})
   end
 
   @doc """
@@ -44,13 +42,12 @@ defmodule ChatonWeb.ApiController do
   @doc """
   Create a new user
   """
-  def create_user(conn, opts) do
-    # user = Chaton.Repo.insert!(Chaton.Auth.User.changeset_meta(%{}, %{toto: "tata"}))
-    user_changeset = Chaton.Auth.User.changeset_meta(%{}, %{toto: "tata"})
-    IO.puts("USER CHANGESET >> #{inspect(user_changeset)}")
+  def create_user(conn, _opts) do
+    user_changeset = Chaton.Auth.User.changeset_meta(%Chaton.Auth.User{}, conn.body_params)
+    u = Chaton.Repo.insert!(user_changeset)
 
     conn
-    |> render("user.json", %{user: %{}})
+    |> render("user.json", %{user: u})
   end
 
   ## Pipes
