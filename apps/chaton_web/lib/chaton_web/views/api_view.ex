@@ -13,8 +13,11 @@ defmodule ChatonWeb.ApiView do
     %{user: user}
   end
 
+  def render("users.json", %{users: users}) do
+    %{users: users}
+  end
+
   def render("error.json", %{message: message}) do
     %{message: message}
   end
-
 end

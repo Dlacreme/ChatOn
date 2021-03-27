@@ -49,6 +49,8 @@ defmodule ChatonWeb.Router do
 
     get("/auth", ApiController, :auth_guest)
     get("/auth/:user_id", ApiController, :auth_user)
+    get("/user/:user_id", ApiController, :get_user)
+    get("/user/", ApiController, :search_user)
     post("/user", ApiController, :create_user)
   end
 

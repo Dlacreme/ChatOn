@@ -40,14 +40,45 @@ defmodule ChatonWeb.ApiController do
   end
 
   @doc """
+  Get a user by ID
+  """
+  def get_user(conn, %{"user_id" => user_id}) do
+    case Chaton.Repo.get_by(Chaton.Auth.User, id: user_id) do
+      nil ->
+        conn
+        |> put_status(:undefined)
+        |> render("error.json", %{message: "Not found"})
+
+      user ->
+        conn
+        |> render("user.json", %{user: user})
+    end
+  end
+
+  @doc """
+  Search for a user using its metadata
+  """
+  def search_user(conn, %{"query" => query}) do
+    case Chaton.Auth.User.search_by_metadata(query) do
+      {:ok, users} ->
+        conn
+        |> render("users.json", %{users: users})
+
+      {:error, _} ->
+        conn
+        |> put_status(:bad_request)
+        |> render("error.json", %{message: "Invalid query. Format should be {\"id\": \"yourid\"}"})
+    end
+  end
+
+  @doc """
   Create a new user
   """
   def create_user(conn, _opts) do
     user_changeset = Chaton.Auth.User.changeset_meta(%Chaton.Auth.User{}, conn.body_params)
-    u = Chaton.Repo.insert!(user_changeset)
 
     conn
-    |> render("user.json", %{user: u})
+    |> render("user.json", %{user: Chaton.Repo.insert!(user_changeset)})
   end
 
   ## Pipes
