@@ -47,11 +47,25 @@ defmodule Chaton.Auth.UserToken do
   end
 
   @doc """
+  Get token
+  """
+  def get(token) do
+    today = NaiveDateTime.utc_now()
+
+    Chaton.Repo.one(
+      from token in token_and_context_query(token, "channel"),
+        left_join: user in assoc(token, :user),
+        where: ^today <= token.expired_at,
+        select: user
+    )
+  end
+
+  @doc """
   Checks if the token is valid and returns its underlying lookup query.
 
   The query returns the user found by the token.
   """
-  def verify_session_token_query(token) do
+  def verify_channel_token_query(token) do
     today = NaiveDateTime.utc_now()
 
     query =

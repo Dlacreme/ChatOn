@@ -10,6 +10,10 @@ defmodule ChatonWeb.Endpoint do
     signing_salt: "aCvYEkqu"
   ]
 
+  socket "/channel", ChatonWeb.ChannelSocket,
+    websocket: true,
+    longpoll: false
+
   socket "/socket", ChatonWeb.UserSocket,
     websocket: true,
     longpoll: false
