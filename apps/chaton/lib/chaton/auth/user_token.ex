@@ -3,7 +3,6 @@ defmodule Chaton.Auth.UserToken do
   import Ecto.Query
 
   @rand_size 32
-  @session_validity_in_days 60
   @channel_validity_in_days 1
 
   @primary_key {:id, :binary_id, autogenerate: true}
@@ -19,33 +18,32 @@ defmodule Chaton.Auth.UserToken do
   end
 
   @doc """
-  Generates a token that will be stored in a signed place,
-  such as session or cookie. As they are signed, those
-  tokens do not need to be hashed.
-  """
-  def build_session_token(user) do
-    token = :crypto.strong_rand_bytes(@rand_size)
-    {token, %__MODULE__{token: token, context: "session", user_id: user.id,
-      expired_at: get_expired_at(@session_validity_in_days)}}
-  end
-
-  @doc """
   Generated a channel token for a user
   """
   def build_channel_token(user) do
     token = :crypto.strong_rand_bytes(@rand_size)
-    {token, %__MODULE__{token: token, context: "channel", user_id: user.id,
-      expired_at: get_expired_at(@channel_validity_in_days)}}
-  end
 
+    {token,
+     %__MODULE__{
+       token: token,
+       context: "channel",
+       user_id: user.id,
+       expired_at: get_expired_at(@channel_validity_in_days)
+     }}
+  end
 
   @doc """
   Generated a channel token for a guest
   """
   def build_channel_token() do
     token = :crypto.strong_rand_bytes(@rand_size)
-    {token, %__MODULE__{token: token, context: "channel",
-      expired_at: get_expired_at(@channel_validity_in_days)}}
+
+    {token,
+     %__MODULE__{
+       token: token,
+       context: "channel",
+       expired_at: get_expired_at(@channel_validity_in_days)
+     }}
   end
 
   @doc """
@@ -55,6 +53,7 @@ defmodule Chaton.Auth.UserToken do
   """
   def verify_session_token_query(token) do
     today = NaiveDateTime.utc_now()
+
     query =
       from token in token_and_context_query(token, "session"),
         join: user in assoc(token, :user),
@@ -72,9 +71,8 @@ defmodule Chaton.Auth.UserToken do
   end
 
   defp get_expired_at(validity_day) do
-    NaiveDateTime.utc_now
+    NaiveDateTime.utc_now()
     |> NaiveDateTime.truncate(:second)
     |> NaiveDateTime.add(60 * 60 * 24 * validity_day)
   end
-
 end

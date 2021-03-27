@@ -3,7 +3,7 @@ defmodule ChatonWeb.ApiController do
   import Plug.Conn
   import Phoenix.Controller
 
-  @api_key_header_name "api-key"
+  @api_key_header_name "x-api-key"
   @api_key System.get_env("API_KEY", "dev")
 
   ## Handlers
@@ -21,6 +21,7 @@ defmodule ChatonWeb.ApiController do
   def auth_guest(conn, _opts) do
     conn
     |> insert_and_return_token(Chaton.Auth.UserToken.build_channel_token())
+
     # |> render("auth.json", %{token: Chaton.Auth.UserToken.build_channel_token()})
   end
 
@@ -33,6 +34,7 @@ defmodule ChatonWeb.ApiController do
         conn
         |> put_status(:undefined)
         |> render("error.json", %{message: "Not found"})
+
       user ->
         conn
         |> insert_and_return_token(Chaton.Auth.UserToken.build_channel_token(user))
@@ -45,7 +47,8 @@ defmodule ChatonWeb.ApiController do
   def create_user(conn, opts) do
     # user = Chaton.Repo.insert!(Chaton.Auth.User.changeset_meta(%{}, %{toto: "tata"}))
     user_changeset = Chaton.Auth.User.changeset_meta(%{}, %{toto: "tata"})
-    IO.puts("USER CHANGESET >> #{inspect user_changeset}")
+    IO.puts("USER CHANGESET >> #{inspect(user_changeset)}")
+
     conn
     |> render("user.json", %{user: %{}})
   end
@@ -83,6 +86,7 @@ defmodule ChatonWeb.ApiController do
 
   defp insert_and_return_token(conn, {token, user_token}) do
     Chaton.Repo.insert!(user_token)
+
     conn
     |> put_view(ChatonWeb.ApiView)
     |> render("auth.json", %{token: Base.url_encode64(token)})
