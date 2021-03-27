@@ -1,6 +1,6 @@
 defmodule Chaton.Cron do
   @moduledoc """
-  CRON is a simple GenServer with relaying on a delayed send/2
+  CRON is a simple GenServer relaying on a delayed send/2
 
   You can add any new CRON tasks in handle_info:work/2
   """
