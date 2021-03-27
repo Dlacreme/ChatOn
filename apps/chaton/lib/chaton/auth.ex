@@ -25,7 +25,7 @@ defmodule Chaton.Auth do
   ## Examples
 
       iex> get_admin_by_email_and_password("foo@example.com", "correct_password")
-      %User{}
+      %Admin{}
 
       iex> get_admin_by_email_and_password("foo@example.com", "invalid_password")
       nil
@@ -33,8 +33,8 @@ defmodule Chaton.Auth do
   """
   def get_admin_by_email_and_password(email, password)
       when is_binary(email) and is_binary(password) do
-    user = Chaton.Repo.get_by(Admin, email: email)
-    if Admin.valid_password?(user, password), do: user
+    admin = Chaton.Repo.get_by(Admin, email: email)
+    if Admin.valid_password?(admin, password), do: admin
   end
 
   @doc """
