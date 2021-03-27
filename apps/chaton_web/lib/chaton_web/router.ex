@@ -40,12 +40,19 @@ defmodule ChatonWeb.Router do
   end
 
   scope "/", ChatonWeb do
+    pipe_through([:api])
+    get("/", ApiController, :index)
+  end
+
+  scope "/", ChatonWeb do
     pipe_through([:api, :require_api_key])
 
-    get("/", ApiController, :index)
     get("/auth", ApiController, :auth_guest)
     get("/auth/:user_id", ApiController, :auth_user)
+    get("/user/:user_id", ApiController, :get_user)
+    get("/user/", ApiController, :search_user)
     post("/user", ApiController, :create_user)
+    post("/user/:user_id", ApiController, :edit_user)
   end
 
   ## Public Socket Handler

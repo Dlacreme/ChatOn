@@ -3,7 +3,7 @@ defmodule ChatonWeb.ApiController do
   import Plug.Conn
   import Phoenix.Controller
 
-  @api_key_header_name "api-key"
+  @api_key_header_name "x-api-key"
   @api_key System.get_env("API_KEY", "dev")
 
   ## Handlers
@@ -20,23 +20,88 @@ defmodule ChatonWeb.ApiController do
   """
   def auth_guest(conn, _opts) do
     conn
-    |> render("auth.json", %{token: "1234"})
+    |> insert_and_return_token(Chaton.Auth.UserToken.build_channel_token())
   end
 
   @doc """
   Create an authentication token for a user
   """
-  def auth_user(conn, _opts) do
-    conn
-    |> render("auth.json", %{token: "1234"})
+  def auth_user(conn, %{"user_id" => user_id}) do
+    case Chaton.Repo.get_by(Chaton.Auth.User, id: user_id) do
+      nil ->
+        conn
+        |> put_status(:undefined)
+        |> render("error.json", %{message: "Not found"})
+
+      user ->
+        conn
+        |> insert_and_return_token(Chaton.Auth.UserToken.build_channel_token(user))
+    end
+  end
+
+  @doc """
+  Get a user by ID
+  """
+  def get_user(conn, %{"user_id" => user_id}) do
+    case Chaton.Repo.get_by(Chaton.Auth.User, id: user_id) do
+      nil ->
+        conn
+        |> put_status(:undefined)
+        |> render("error.json", %{message: "Not found"})
+
+      user ->
+        conn
+        |> render("user.json", %{user: user})
+    end
+  end
+
+  @doc """
+  Search for a user using its metadata
+  """
+  def search_user(conn, %{"query" => q}) do
+    case Chaton.Auth.User.search_by_metadata(q) do
+      {:ok, users} ->
+        conn
+        |> render("users.json", %{users: users})
+
+      {:error, _} ->
+        conn
+        |> put_status(:bad_request)
+        |> render("error.json", %{message: "Invalid query. Format should be {\"id\": \"yourid\"}"})
+    end
   end
 
   @doc """
   Create a new user
   """
   def create_user(conn, _opts) do
+    user_changeset = Chaton.Auth.User.changeset_meta(%Chaton.Auth.User{}, conn.body_params)
+
     conn
-    |> render("user.json", %{user: %{}})
+    |> render("user.json", %{user: Chaton.Repo.insert!(user_changeset)})
+  end
+
+  @doc """
+  Edit an existing user using its ID
+  """
+  def edit_user(conn, %{"user_id" => user_id}) do
+    conn |> update_user(Chaton.Repo.get_by(Chaton.Auth.User, id: user_id))
+  end
+
+  defp update_user(conn, %Chaton.Auth.User{} = user) do
+    conn
+    |> render("user.json", %{
+      user:
+        user
+        |> Chaton.Auth.User.changeset_meta(conn.body_params)
+        |> Chaton.Repo.update!()
+    })
+  end
+
+  defp update_user(conn, _) do
+    conn
+    |> put_status(:undefined)
+    |> render("error.json", "User not found")
   end
 
   ## Pipes
@@ -50,7 +115,7 @@ defmodule ChatonWeb.ApiController do
         conn
         |> put_status(:unauthorized)
         |> put_view(ChatonWeb.ApiView)
-        |> render(ChatonWeb.ApiView, "error.json", %{message: "Incorrect headers."})
+        |> render("error.json", %{message: "Incorrect headers."})
         |> halt()
 
       header ->
@@ -68,5 +133,13 @@ defmodule ChatonWeb.ApiController do
     |> put_view(ChatonWeb.ApiView)
     |> render("error.json", %{message: "Invalid headers."})
     |> halt()
+  end
+
+  defp insert_and_return_token(conn, {token, user_token}) do
+    Chaton.Repo.insert!(user_token)
+
+    conn
+    |> put_view(ChatonWeb.ApiView)
+    |> render("auth.json", %{token: Base.url_encode64(token)})
   end
 end
