@@ -4,10 +4,18 @@ defmodule ChatonWeb.ChannelSocket do
   @impl true
   def connect(%{"token" => token}, socket, _connect_info) do
     case Chaton.Auth.UserToken.get(token) do
-      nil -> {:error, socket}
+      nil -> invalid_token(socket)
       user_token -> {:ok, authenticate(socket, user_token)}
     end
   end
+
+  @impl true
+  def connect(_info, socket, _connect_info) do
+    socket |> invalid_token()
+  end
+
+  @impl true
+  def id(_socket), do: nil
 
   defp authenticate(socket, user_token) when user_token.user_id == nil do
     assign(socket, type: :guest)
@@ -17,6 +25,7 @@ defmodule ChatonWeb.ChannelSocket do
     assign(socket, type: :user, user_id: user_token.user_id)
   end
 
-  @impl true
-  def id(_socket), do: nil
+  defp invalid_token(_socket) do
+    :error
+  end
 end

@@ -26,7 +26,7 @@ defmodule ChatonWeb.Router do
   scope "/app", ChatonWeb do
     pipe_through([:browser, :require_authenticated_admin])
 
-    delete("/logout", AuthController, :delete)
+    get("/logout", AuthController, :delete)
 
     live "/", HomeLive, :index
     live_dashboard "/dashboard", metrics: ChatonWeb.Telemetry
