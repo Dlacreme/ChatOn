@@ -46,6 +46,7 @@ To start the Phoenix Web Server (admin app):
 
 Make sure all the test pass:
   * `mix test`
+  * `mix test.watch`
 
 ## Deployment
 

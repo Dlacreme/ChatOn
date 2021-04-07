@@ -51,4 +51,10 @@ defmodule Chaton.Chat do
   Get all users for a room
   """
   def get_room_users(room_id), do: Repo.all(from ru in RoomUser, where: ru.room_id == ^room_id)
+
+  @doc """
+  Get all rooms for a user
+  """
+  def get_user_rooms(user_id),
+    do: Repo.all(from u in User, join: r in assoc(u, :rooms), where: u.id == ^user_id, select: r)
 end

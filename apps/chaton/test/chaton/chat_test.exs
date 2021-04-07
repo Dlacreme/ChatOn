@@ -40,7 +40,9 @@ defmodule Chaton.ChatTest do
     assert {:ok, _} = Chat.add_user_to_room(room.id, state.random_user_id)
   end
 
-  test "should list user's chatroom" do
-    assert true == true
+  test "should list user's chatroom", state do
+    {:ok, room} = Chat.create_room(state.user_id)
+    rooms = Chat.get_user_rooms(state.user_id)
+    assert length(rooms) > 0
   end
 end
