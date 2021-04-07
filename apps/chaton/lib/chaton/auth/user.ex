@@ -5,9 +5,12 @@ defmodule Chaton.Auth.User do
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "users" do
-    field :meta, :map, null: false, default: %{}
-    field :disabled_at, :utc_datetime
+    field(:meta, :map, null: false, default: %{})
+    field(:disabled_at, :utc_datetime)
     timestamps()
+
+    has_many :room_users, Chaton.Chat.RoomUser
+    has_many :rooms, through: [:room_users, :room]
   end
 
   @doc """
@@ -19,16 +22,27 @@ defmodule Chaton.Auth.User do
   end
 
   @doc """
+  Filter users using any match withing metadata
+  """
+  def filter_by_metadata(query) do
+    process_query_metadata(
+      Chaton.Repo.query("SELECT * FROM users WHERE meta::text ILIKE '%#{query}%'")
+    )
+  end
+
+  @doc """
   Search for users using its metadata
   """
   def search_by_metadata(query) do
-    case Chaton.Repo.query("SELECT * FROM users WHERE meta @> '#{query}'") do
-      {:ok, res} ->
-        {:ok, Enum.map(res.rows, &Chaton.Repo.load(__MODULE__, {res.columns, &1}))}
+    process_query_metadata(Chaton.Repo.query("SELECT * FROM users WHERE meta @> '#{query}'"))
+  end
 
-      {:error, _} ->
-        {:error, "Invalid query"}
-    end
+  defp process_query_metadata({:ok, res}) do
+    {:ok, Enum.map(res.rows, &Chaton.Repo.load(__MODULE__, {res.columns, &1}))}
+  end
+
+  defp process_query_metadata({:error, _}) do
+    {:error, "Invalid query"}
   end
 end
 

@@ -135,7 +135,7 @@ defmodule ChatonWeb.ApiController do
     |> halt()
   end
 
-  defp encode_token(conn, {token, user_token}) do
+  defp encode_token(conn, {token, _user_token}) do
     conn
     |> put_view(ChatonWeb.ApiView)
     |> render("auth.json", %{token: Base.url_encode64(token)})
