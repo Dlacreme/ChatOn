@@ -20,7 +20,7 @@ defmodule ChatonWeb.ApiController do
   """
   def auth_guest(conn, _opts) do
     conn
-    |> insert_and_return_token(Chaton.Auth.UserToken.build_channel_token())
+    |> encode_token(Chaton.Auth.UserToken.generate_token())
   end
 
   @doc """
@@ -35,7 +35,7 @@ defmodule ChatonWeb.ApiController do
 
       user ->
         conn
-        |> insert_and_return_token(Chaton.Auth.UserToken.build_channel_token(user))
+        |> encode_token(Chaton.Auth.UserToken.generate_token(user))
     end
   end
 
@@ -135,9 +135,7 @@ defmodule ChatonWeb.ApiController do
     |> halt()
   end
 
-  defp insert_and_return_token(conn, {token, user_token}) do
-    Chaton.Repo.insert!(user_token)
-
+  defp encode_token(conn, {token, user_token}) do
     conn
     |> put_view(ChatonWeb.ApiView)
     |> render("auth.json", %{token: Base.url_encode64(token)})

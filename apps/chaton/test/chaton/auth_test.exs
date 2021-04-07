@@ -21,8 +21,7 @@ defmodule Chaton.AuthTest do
   end
 
   test "should create a token" do
-    {_, user_token} = Auth.UserToken.build_channel_token()
-    assert {:ok, _} = Repo.insert(user_token)
+    assert {_, %Auth.UserToken{} = _} = Auth.UserToken.generate_token()
   end
 
   test "should remove expired token" do

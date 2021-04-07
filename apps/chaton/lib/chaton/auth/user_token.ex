@@ -18,32 +18,29 @@ defmodule Chaton.Auth.UserToken do
   end
 
   @doc """
-  Generated a channel token for a user
+  Generate and insert a new token for a user
   """
-  def build_channel_token(user) do
-    token = :crypto.strong_rand_bytes(@rand_size)
-
-    {token,
-     %__MODULE__{
-       token: token,
-       context: "channel",
-       user_id: user.id,
-       expired_at: get_expired_at(@channel_validity_in_days)
-     }}
+  def generate_token(user) do
+    with {token, user_token} <- build_channel_token(user),
+         {:ok, user_token} <-
+           Chaton.Repo.insert(user_token) do
+      {token, user_token}
+    else
+      err -> {:error, err}
+    end
   end
 
   @doc """
-  Generated a channel token for a guest
+  Generate and insert a new token for a guest
   """
-  def build_channel_token() do
-    token = :crypto.strong_rand_bytes(@rand_size)
-
-    {token,
-     %__MODULE__{
-       token: token,
-       context: "channel",
-       expired_at: get_expired_at(@channel_validity_in_days)
-     }}
+  def generate_token() do
+    with {token, user_token} <- build_channel_token(),
+         {:ok, user_token} <-
+           Chaton.Repo.insert(user_token) do
+      {token, user_token}
+    else
+      err -> {:error, err}
+    end
   end
 
   @doc """
@@ -81,6 +78,35 @@ defmodule Chaton.Auth.UserToken do
   """
   def token_and_context_query(token, context) do
     from __MODULE__, where: [token: ^token, context: ^context]
+  end
+
+  @doc """
+  Build token for a user
+  """
+  def build_channel_token(user) do
+    token = :crypto.strong_rand_bytes(@rand_size)
+
+    {token,
+     %__MODULE__{
+       token: token,
+       context: "channel",
+       user_id: user.id,
+       expired_at: get_expired_at(@channel_validity_in_days)
+     }}
+  end
+
+  @doc """
+  Build token for a guest
+  """
+  def build_channel_token() do
+    token = :crypto.strong_rand_bytes(@rand_size)
+
+    {token,
+     %__MODULE__{
+       token: token,
+       context: "channel",
+       expired_at: get_expired_at(@channel_validity_in_days)
+     }}
   end
 
   defp get_expired_at(validity_day) do
