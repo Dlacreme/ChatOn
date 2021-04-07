@@ -8,6 +8,9 @@ defmodule Chaton.Auth.User do
     field(:meta, :map, null: false, default: %{})
     field(:disabled_at, :utc_datetime)
     timestamps()
+
+    has_many :room_users, Chaton.Chat.RoomUser
+    has_many :rooms, through: [:room_users, :room]
   end
 
   @doc """
