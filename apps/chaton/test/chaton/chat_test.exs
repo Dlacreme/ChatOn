@@ -20,6 +20,10 @@ defmodule Chaton.ChatTest do
     assert {:ok, _} = Chat.list_users(nil)
   end
 
+  test "should list user's chatroom" do
+    assert true == false
+  end
+
   test "should create a new room" do
     assert true == false
   end

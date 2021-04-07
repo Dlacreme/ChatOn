@@ -6,10 +6,15 @@ defmodule Chaton.Chat.Message do
   @foreign_key_type :binary_id
   schema "messages" do
     field :content, :string
-    field :to, Ecto.UUID
-    field :user_id, Ecto.UUID
 
-    timestamps()
+    belongs_to :user, Chaton.Auth.User
+
+    belongs_to :to_user, Chaton.Auth.User,
+      references: :id,
+      type: :binary_id,
+      foreign_key: :to_id
+
+    timestamps(updated_at: false)
   end
 
   @doc false

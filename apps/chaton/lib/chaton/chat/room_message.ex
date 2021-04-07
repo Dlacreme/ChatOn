@@ -6,9 +6,10 @@ defmodule Chaton.Chat.RoomMessage do
   @foreign_key_type :binary_id
   schema "room_messages" do
     field :content, :string
-    field :user_id, Ecto.UUID
+    belongs_to :room, Chaton.Chat.Room
+    belongs_to :user, Chaton.Auth.User
 
-    timestamps()
+    timestamps(updated_at: false)
   end
 
   @doc false

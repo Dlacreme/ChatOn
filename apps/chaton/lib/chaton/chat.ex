@@ -14,4 +14,8 @@ defmodule Chaton.Chat do
   def list_users(query) do
     Chaton.Auth.User.filter_by_metadata(query)
   end
+
+  @doc """
+  Create a new room
+  """
 end

@@ -5,8 +5,8 @@ defmodule Chaton.Chat.RoomUser do
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "room_users" do
-    field :room_id, Ecto.UUID
-    field :user_id, Ecto.UUID
+    belongs_to :room, Chaton.Chat.Room
+    belongs_to :user, Chaton.Auth.User
 
     timestamps()
   end

@@ -7,7 +7,7 @@ defmodule Chaton.Repo.Migrations.CreateRoomMessages do
       add :user_id, references(:users, type: :binary_id), null: false
       add :content, :text
 
-      timestamps()
+      timestamps(updated_at: false)
     end
 
   end
