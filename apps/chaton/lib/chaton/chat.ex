@@ -62,17 +62,46 @@ defmodule Chaton.Chat do
 
   ## Message
 
-  @spec send_message(%User{}, %Room{} | %User{}, String.t()) ::
-          {:ok, %Chaton.Notification{}} | {:error, String.t()}
-  def send_message(_from, _to, content) when content == "" do
-    {:error, "Invalid message"}
+  @spec send_message(%User{}, %User{} | %Room{}, String.t()) :: :ok
+  def send_message(user = %User{}, to, content) do
+    {:ok, notifs} = message_to_notifications(user, to, content)
+    Enum.map(notifs, fn n -> send_notification(n) end)
+    :ok
   end
 
-  def send_message(user = %User{}, room = %Room{}, content) do
-    {:ok, %Chaton.Notification{from: user, to: room, content: content}}
+  @spec message_to_notifications(%User{}, %Room{} | %User{}, String.t()) ::
+          {:ok, []}
+  def message_to_notifications(user = %User{}, room = %Room{}, content) do
+    {:ok,
+     room
+     |> Repo.preload(:room_users)
+     |> Enum.map(fn u ->
+       %Chaton.Notification{from: user, to: u, context: room, content: content}
+     end)}
   end
 
-  def send_message(user = %User{}, to_user = %User{}, content) do
-    {:ok, %Chaton.Notification{from: user, to: to_user, content: content}}
+  def message_to_notifications(user = %User{}, to_user = %User{}, content) do
+    {:ok, [%Chaton.Notification{from: user, to: to_user, content: content}]}
+  end
+
+  def send_notification(notif = %Chaton.Notification{}) do
+    case get_user_socket?(notif.to) do
+      nil ->
+        save_notification(notif)
+
+      socket ->
+        push_notification(socket, notif)
+    end
+  end
+
+  @spec get_user_socket?(%User{}) :: term() | nil
+  defp get_user_socket?(_user) do
+    nil
+  end
+
+  defp save_notification(_notif) do
+  end
+
+  defp push_notification(_socket, _notif) do
   end
 end
