@@ -20,6 +20,8 @@ defmodule Chaton.Chat do
     User.filter_by_metadata(query)
   end
 
+  ## Room
+
   @doc """
   Create a new room
   """
@@ -57,4 +59,20 @@ defmodule Chaton.Chat do
   """
   def get_user_rooms(user_id),
     do: Repo.all(from u in User, join: r in assoc(u, :rooms), where: u.id == ^user_id, select: r)
+
+  ## Message
+
+  @spec send_message(%User{}, %Room{} | %User{}, String.t()) ::
+          {:ok, %Chaton.Notification{}} | {:error, String.t()}
+  def send_message(_from, _to, content) when content == "" do
+    {:error, "Invalid message"}
+  end
+
+  def send_message(user = %User{}, room = %Room{}, content) do
+    {:ok, %Chaton.Notification{from: user, to: room, content: content}}
+  end
+
+  def send_message(user = %User{}, to_user = %User{}, content) do
+    {:ok, %Chaton.Notification{from: user, to: to_user, content: content}}
+  end
 end
