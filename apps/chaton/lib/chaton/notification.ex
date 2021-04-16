@@ -1,12 +1,16 @@
 defmodule Chaton.Notification do
   @moduledoc """
-  Notification are core of Chaton Messaging.
-  It is basically a Message with all the required metadata for client to process the message
-
-  Notification is the outgoing pipeline for messages. Chaton.Chat.send_message return a Notification.
+  Notification is basically a Message with all the required metadata for client to process the message
+  It is the last step of the `send` pipeline for messages.
 
   Notification is then either sent to client if the recipient is connected
-    or stored in Database and wait for user to connect to send the Notification and clear the item in DB
+    or stored in Database until the recipient connects
   """
   defstruct from: nil, to: nil, context: nil, content: nil
+
+  defimpl Jason.Encoder, for: Chaton.Notification do
+    def encode(value, opts) do
+      Jason.Encode.map(Map.take(value, [:from, :to, :context, :content]), opts)
+    end
+  end
 end

@@ -20,7 +20,7 @@ defmodule Chaton.Chat.Message do
   @doc false
   def changeset(message, attrs) do
     message
-    |> cast(attrs, [:user_id, :to, :content])
-    |> validate_required([:user_id, :to, :content])
+    |> cast(attrs, [:user_id, :to_id, :content])
+    |> validate_required([:user_id, :to_id, :content])
   end
 end

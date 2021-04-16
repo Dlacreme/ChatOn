@@ -10,14 +10,13 @@ defmodule Chaton.ChatMessageTest do
     {:ok, hello_user} = Repo.insert(%User{} |> User.changeset_meta(%{hello: "world"}))
     {:ok, room} = Chat.create_room(hello_user.id)
     {:ok, room: room, toto_user: toto_user, hello_user: hello_user}
-    :ok
   end
 
   test "should post a message to chat room" do
     assert true == true
   end
 
-  test "should send a direct message to a user" do
-    assert true == true
+  test "should send a direct message to a user", state do
+    assert 0 < length(Chaton.Chat.send_message!(state.toto_user, state.hello_user, "Hello World"))
   end
 end

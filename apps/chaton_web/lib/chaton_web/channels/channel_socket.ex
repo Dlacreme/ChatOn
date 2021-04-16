@@ -17,11 +17,17 @@ defmodule ChatonWeb.ChannelSocket do
   @impl true
   def id(_socket), do: nil
 
+  @impl true
+  def handle_in("message", %{}, socket) do
+    {:noreply, socket}
+  end
+
   defp authenticate(socket, user_token) when user_token.user_id == nil do
     assign(socket, type: :guest)
   end
 
   defp authenticate(socket, user_token) do
+    ChatonWeb.Agent.ConnectedUser.connected(user_token)
     assign(socket, type: :user, user_id: user_token.user_id)
   end
 

@@ -8,6 +8,9 @@ defmodule Chaton.Chat do
   alias Chaton.Auth.User
   alias Chaton.Chat.Room
   alias Chaton.Chat.RoomUser
+  alias Chaton.Chat.Message
+  alias Chaton.Chat.RoomMessage
+  alias Chaton.Chat.Notification
 
   @doc """
   Returns all potential contacts. @query allows to filters using metadata
@@ -62,46 +65,54 @@ defmodule Chaton.Chat do
 
   ## Message
 
-  @spec send_message(%User{}, %User{} | %Room{}, String.t()) :: :ok
-  def send_message(user = %User{}, to, content) do
-    {:ok, notifs} = message_to_notifications(user, to, content)
-    Enum.map(notifs, fn n -> send_notification(n) end)
-    :ok
+  @spec send_message!(%User{}, %User{}, String.t()) ::
+          list(%Chaton.Notification{})
+  def send_message!(user = %User{}, to = %User{}, content) do
+    message =
+      %Message{}
+      |> Message.changeset(%{user_id: user.id, to_id: to.id, content: content})
+      |> Repo.insert!()
+
+    notifs = generate_notifications(user, to, content)
+    notifs |> Enum.each(fn x -> save_notification(x, message.id) end)
+    notifs
+    ## ChatonWeb should handle the sockets
+    # |> Enum.each(fn x ->
+    #   with _ <- save_notification(x, message.id),
+    #      _ <- send_notification(x)
+    #   do :ok end
+    # end)
   end
 
-  @spec message_to_notifications(%User{}, %Room{} | %User{}, String.t()) ::
-          {:ok, []}
-  def message_to_notifications(user = %User{}, room = %Room{}, content) do
-    {:ok,
-     room
-     |> Repo.preload(:room_users)
-     |> Enum.map(fn u ->
-       %Chaton.Notification{from: user, to: u, context: room, content: content}
-     end)}
+  # def send_message(user = %User{}, to = %Room{}, content) do
+  # end
+
+  @spec generate_notifications(%User{}, %User{} | %Room{}, String.t()) ::
+          list(%Chaton.Notification{})
+  defp generate_notifications(user = %User{}, to = %User{}, content) do
+    [
+      %Chaton.Notification{
+        from: user,
+        to: to,
+        content: content
+      }
+    ]
   end
 
-  def message_to_notifications(user = %User{}, to_user = %User{}, content) do
-    {:ok, [%Chaton.Notification{from: user, to: to_user, content: content}]}
+  @spec save_notification(%Chaton.Notification{}, term()) :: %Notification{}
+  defp save_notification(notif = %Chaton.Notification{}, message_id) do
+    %Notification{}
+    |> Notification.changeset(%{
+      user_id: notif.to.id,
+      message_id: message_id,
+      notification: notif
+    })
+    |> Repo.insert!()
   end
 
-  def send_notification(notif = %Chaton.Notification{}) do
-    case get_user_socket?(notif.to) do
-      nil ->
-        save_notification(notif)
-
-      socket ->
-        push_notification(socket, notif)
-    end
-  end
-
-  @spec get_user_socket?(%User{}) :: term() | nil
-  defp get_user_socket?(_user) do
-    nil
-  end
-
-  defp save_notification(_notif) do
-  end
-
-  defp push_notification(_socket, _notif) do
-  end
+  ## ChatonWeb should send the notifications over sockets?
+  # @spec send_notification(%Chaton.Notification{}) :: :ok
+  # defp send_notification(notif = %Chaton.Notification{}) do
+  #   :ok
+  # end
 end

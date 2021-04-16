@@ -10,7 +10,8 @@ defmodule ChatonWeb.Application do
       # Start the Telemetry supervisor
       ChatonWeb.Telemetry,
       # Start the Endpoint (http/https)
-      ChatonWeb.Endpoint
+      ChatonWeb.Endpoint,
+      ChatonWeb.Agent.ConnectedUser
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
