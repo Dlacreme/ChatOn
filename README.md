@@ -2,7 +2,7 @@
 
 Cool chat system written in Elixir.
 
-One instance per consumer. You can add an admin using a single email and password through CLI (check seeds.exs)
+One instance per consumer. You can add an admin using a single email and password through IEX (check seeds.exs)
 
 ## Consumer Flow
  1. Consumer back-end can create a new user and attach any meta data via the admin API (optional)
